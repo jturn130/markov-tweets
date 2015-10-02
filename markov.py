@@ -37,6 +37,8 @@ class MarkovMachine(object):
 
         key = choice(self.chains.keys())
         words = [key[0], key[1]]
+        char_limit = 139
+        text = ""
 
         while key in self.chains:
             # Keep looping until we have a key that isn't in the chains
@@ -44,17 +46,28 @@ class MarkovMachine(object):
             #
             # Note that for long texts (like a full book), this might mean
             # it would run for a very long time.
+            while text == "" and key[0][0].islower():
+                key = choice(self.chains.keys())
+                words = [key[0], key[1]]
+
 
             word = choice(self.chains[key])
-            words.append(word)
-            key = (key[1], word)
+            # print "this is len(text): {}".format(len(text))
+            # print "this is len(word): {}".format(len(word))
+            if len(text) + len(word) <= char_limit:
+                words.append(word)
+                key = (key[1], word)
+            else:
+                text = text + '.'
+                break
 
-        text = " ".join(words)
+            text = " ".join(words)
+            if '.' in word:
+                break    
 
         # This is the clumsiest way to make sure it's never longer than
         # 140 characters; can you think of better ways?
-        return text[:140]
-
+        return text
 
 if __name__ == "__main__":
     filenames = sys.argv[1:]
